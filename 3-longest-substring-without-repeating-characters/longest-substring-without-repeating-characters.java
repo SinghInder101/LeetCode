@@ -21,7 +21,6 @@ class Solution {
         }
 
         // You can print the final result if you want to check the answer
-        System.out.println("Final Length of Longest Substring: " + length);
 
         return length;
     }
