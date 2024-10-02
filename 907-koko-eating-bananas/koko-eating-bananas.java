@@ -3,19 +3,22 @@ class Solution {
 
           // Initialize max and min values to the first element in the array
         int maxValue = piles[0];
+        int sum = 0;
 
         // Loop through the array to find the maximum, minimum values, and calculate the sum
         for (int i = 0; i < piles.length; i++) {
             if (piles[i] > maxValue) {
                 maxValue = piles[i];
             }
+            sum += piles[i];
            
         }
+        int si= (int)Math.ceil((double) sum/(double) h);
 
         if(piles.length == h ){
             return maxValue;
         }
-      int low = 1, high = maxValue;
+      int low = si, high = maxValue;
 
       while(low<=high){
         int mid = (high+low)/2;
