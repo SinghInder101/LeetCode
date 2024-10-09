@@ -4,18 +4,16 @@ class Solution {
        int m = triangle.size();
        int n = triangle.get(0).size();
 
-       int dp [][] = new int [m][triangle.get(triangle.size()-1).size()];
+       Integer dp [][] = new Integer [m][triangle.get(triangle.size()-1).size()];
 
-      for (int i = 0; i < dp.length; i++) {
-    Arrays.fill(dp[i], Integer.MAX_VALUE);
-}
-        return helper(triangle,0,0,m,n,dp);
+   
+        return (int) helper(triangle,0,0,m,n,dp);
        
 
 
         
     }
-    public int helper(List<List<Integer>> triangle,int i , int j , int m , int n,int dp [] []){
+    public Integer helper(List<List<Integer>> triangle,int i , int j , int m , int n,Integer dp [] []){
 
        
        if(i+1 >= m){
@@ -24,14 +22,14 @@ class Solution {
        }
         int bottom;
         int diagonal;
-          if(dp[i+1][j] != Integer.MAX_VALUE){
+          if(dp[i+1][j] != null){
             bottom = dp[i+1][j];
           }
           else{
             
           bottom = helper(triangle,i+1,j,m,triangle.get(i).size(),dp);
           }
-           if(dp[i+1][j+1] != Integer.MAX_VALUE){
+           if(dp[i+1][j+1] != null){
             diagonal = dp[i+1][j+1];
           }
           else{
