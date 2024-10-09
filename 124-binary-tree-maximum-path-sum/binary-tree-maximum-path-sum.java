@@ -1,42 +1,61 @@
 /**
  * Definition for a binary tree node.
  * public class TreeNode {
- *     int val;
- *     TreeNode left;
- *     TreeNode right;
- *     TreeNode() {}
- *     TreeNode(int val) { this.val = val; }
- *     TreeNode(int val, TreeNode left, TreeNode right) {
- *         this.val = val;
- *         this.left = left;
- *         this.right = right;
- *     }
+ * int val;
+ * TreeNode left;
+ * TreeNode right;
+ * TreeNode() {}
+ * TreeNode(int val) { this.val = val; }
+ * TreeNode(int val, TreeNode left, TreeNode right) {
+ * this.val = val;
+ * this.left = left;
+ * this.right = right;
+ * }
  * }
  */
+public class Pair {
+    public int a;
+    public int b;
+
+    Pair() {
+        this.a = Integer.MIN_VALUE;
+        this.b = Integer.MIN_VALUE;
+
+    }
+
+}
+
 class Solution {
-    int max = Integer.MIN_VALUE;
     public int maxPathSum(TreeNode root) {
-        int ans = helper(root);
-        return Math.max(max,ans);
-        
+        Pair ans = helper(root);
+        return Math.max(ans.a, ans.b);
+
     }
-    public int helper(TreeNode root){
-        if(root== null){
-            return 0;
+
+    public Pair helper(TreeNode root) {
+        if (root == null) {
+            return new Pair();
         }
-        int leftAns = helper(root.left);
-        if(leftAns<0){
-            leftAns = 0;
+        Pair leftAns = helper(root.left);
+        if (leftAns.b < 0) {
+            leftAns.b = 0;
         }
-        int rightAns = helper(root.right);
-          if(rightAns<0){
-            rightAns = 0;
+        Pair rightAns = helper(root.right);
+        if (rightAns.b < 0) {
+            rightAns.b = 0;
+
         }
-        
-        max = Math.max(max,leftAns+rightAns+root.val);
-        int leftOrRight = Math.max(leftAns,rightAns) + root.val;
-        return Math.max(leftOrRight,root.val); 
+
+        int rootIncluding = root.val + Math.max(leftAns.b, rightAns.b);
+        int rootVal = root.val;
+
+        Pair ans = new Pair();
+        ans.a = Math.max(leftAns.a, Math.max(rightAns.a, root.val + leftAns.b + rightAns.b));
+
+        ans.b = Math.max(rootIncluding, rootVal);
+
+        return ans;
+
     }
-    
 
 }
