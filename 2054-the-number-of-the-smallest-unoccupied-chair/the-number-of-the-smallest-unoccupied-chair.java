@@ -1,91 +1,105 @@
 import java.util.*;
 
-class Solution {
-    public int smallestChair(int[][] times, int targetFriend) {
+public class Solution {
+
+    // Class to represent each friend with arrival time, departure time, and unique ID
+    static class Friend {
+        int arrival;
+        int departure;
+        int id;
+
+        Friend(int arrival, int departure, int id) {
+            this.arrival = arrival;
+            this.departure = departure;
+            this.id = id;
+        }
+    }
+
+    /**
+     * Finds the seat number assigned to the target friend.
+     *
+     * @param times        A list of [arrival, departure] times for each friend.
+     * @param targetFriend The index of the target friend whose seat number is to be found.
+     * @return The seat number assigned to the target friend.
+     */
+    public static int smallestChair(int[][] times, int targetFriend) {
         int n = times.length;
 
-        // Create a list of friends with arrival, departure, and index
+        // Create a list of Friend objects with their arrival, departure times, and IDs
         List<Friend> friends = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             friends.add(new Friend(times[i][0], times[i][1], i));
         }
 
-        // Sort friends by arrival time
-        friends.sort(Comparator.comparingInt(a -> a.arrival));
+        // Sort friends by arrival time.
+        // If arrival times are equal, sort by departure time.
+        Collections.sort(friends, new Comparator<Friend>() {
+            @Override
+            public int compare(Friend f1, Friend f2) {
+                if (f1.arrival != f2.arrival) {
+                    return f1.arrival - f2.arrival;
+                } else {
+                    return f1.departure - f2.departure;
+                }
+            }
+        });
 
-        // Min-heap for available seats
+        // Min-heap to manage available seat numbers (smallest seat number first)
         PriorityQueue<Integer> availableSeats = new PriorityQueue<>();
 
-        // Min-heap for occupied seats based on departure time
-        PriorityQueue<OccupiedSeat> occupiedSeats = new PriorityQueue<>(
-            Comparator.comparingInt(a -> a.departure)
-        );
+        // Min-heap to manage occupied seats, sorted by departure time
+        // Each entry is a pair [departure_time, seat_number]
+        PriorityQueue<int[]> occupiedSeats = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] a, int[] b) {
+                if (a[0] != b[0]) {
+                    return a[0] - b[0]; // Sort by departure time
+                } else {
+                    return a[1] - b[1]; // If departure times are equal, sort by seat number
+                }
+            }
+        });
 
-        int nextSeat = 0;
+        // Variable to assign new seat numbers when no available seats are free
+        int nextSeatNumber = 0;
 
+        // Variable to store the seat number assigned to the target friend
+        int targetSeat = -1;
+
+        // Iterate through each friend in the sorted list
         for (Friend friend : friends) {
-            int arrival = friend.arrival;
-            int departure = friend.departure;
-            int index = friend.index;
+            int currentArrival = friend.arrival;
+            int currentDeparture = friend.departure;
+            int friendId = friend.id;
 
-            // Free up seats from friends who have departed by now
-            while (!occupiedSeats.isEmpty() && occupiedSeats.peek().departure <= arrival) {
-                int freedSeat = occupiedSeats.poll().seat;
-                availableSeats.offer(freedSeat);
+            // Release seats from friends who have already left before the current friend's arrival
+            while (!occupiedSeats.isEmpty() && occupiedSeats.peek()[0] <= currentArrival) {
+                int[] freed = occupiedSeats.poll(); // Remove the friend who has left
+                int freedSeat = freed[1]; // Get the seat number that has been freed
+                availableSeats.offer(freedSeat); // Add the freed seat back to available seats
             }
 
-            // Assign the lowest-numbered available seat
-            int seat;
+            int assignedSeat;
+
+            // Assign the smallest available seat if any are free
             if (!availableSeats.isEmpty()) {
-                seat = availableSeats.poll();
+                assignedSeat = availableSeats.poll();
             } else {
-                seat = nextSeat++;
+                // If no seats are available, assign a new seat
+                assignedSeat = nextSeatNumber;
+                nextSeatNumber++;
             }
 
-            // If this is the target friend, return the seat
-            if (index == targetFriend) {
-                return seat;
+            // If the current friend is the target friend, store the assigned seat number
+            if (friendId == targetFriend) {
+                targetSeat = assignedSeat;
             }
 
-            // Mark the seat as occupied
-            occupiedSeats.offer(new OccupiedSeat(departure, seat));
+            // Add the current friend's departure time and assigned seat to the occupied seats heap
+            occupiedSeats.offer(new int[]{currentDeparture, assignedSeat});
         }
 
-        // If targetFriend was not found, return -1 or handle accordingly
-        return -1;
-    }
-
-    // Helper class to represent a friend
-    static class Friend {
-        int arrival;
-        int departure;
-        int index;
-
-        Friend(int arrival, int departure, int index) {
-            this.arrival = arrival;
-            this.departure = departure;
-            this.index = index;
-        }
-    }
-
-    // Helper class to represent an occupied seat
-    static class OccupiedSeat {
-        int departure;
-        int seat;
-
-        OccupiedSeat(int departure, int seat) {
-            this.departure = departure;
-            this.seat = seat;
-        }
-    }
-
-    // Example usage (for testing purposes)
-    public static void main(String[] args) {
-        Solution solution = new Solution();
-        int[][] times = { {1, 4}, {2, 3}, {4, 6} };
-        int targetFriend = 1;
-        int seatNumber = solution.smallestChair(times, targetFriend);
-        System.out.println(seatNumber); // Output: 1
+        // Return the seat number assigned to the target friend
+        return targetSeat;
     }
 }
-
