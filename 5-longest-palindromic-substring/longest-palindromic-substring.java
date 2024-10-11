@@ -1,5 +1,7 @@
 class Solution {
     public String longestPalindrome(String s) {
+        int arr[] = new int [5];
+        
 
         //Orbit Axis Theorem or DP
         String ans = "";
@@ -10,22 +12,23 @@ class Solution {
             while(axis+orbit < s.length() && axis-orbit>= 0){
                 if(s.charAt(axis+orbit) == s.charAt(axis-orbit)){
                     orbit++;
-                    length +=2;
+                    length += 2;
                 }
                 else{
                     break;
                 }
             }
             if(length>ans.length()){
-                int startIndex = axis- length/2;
+                int startIndex = axis - length/2;
                  ans = s.substring(startIndex, startIndex+length);
             }
         }
         //For even length
         for(int axis = 0; axis<s.length()-1;axis++){
             int orbit = 1;
-            int length = 0; //LENGTH IS ZERO BECAUSE WE HAVE KEPT THE AXIS IN BW THE THE CHARS A | B | C, here | is axis
-            while(axis+orbit < s.length() && axis-orbit+1>= 0){
+            int length = 0; //LENGTH is zero becaue the minimum length of even palindrome could be two
+            while(axis+orbit < s.length() && axis-orbit+1>= 0 // (+1 is added to make sure it checks the current value it is on as well)
+            ){
                 if(s.charAt(axis+orbit) == s.charAt(axis-orbit+1)){
                     orbit++;
                     length +=2;
