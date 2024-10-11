@@ -47,9 +47,4 @@ class Solution {
         return roomCount;
     }
 
-    public static void main(String[] args) {
-        Solution sol = new Solution();
-        int[][] intervals = {{0, 30}, {5, 10}, {15, 20}};
-        System.out.println(sol.minMeetingRooms(intervals)); // Output: 2
-    }
 }
